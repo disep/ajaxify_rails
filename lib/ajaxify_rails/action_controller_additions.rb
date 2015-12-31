@@ -78,7 +78,6 @@ module ActionControllerAdditions
         end
 
         super
-
         ajaxify_add_meta_tags unless request.xhr?
 
         return
@@ -125,8 +124,20 @@ module ActionControllerAdditions
       end
 
       def ajaxify_assets_digest
-        digests = Rails.application.config.assets.digests
-        digests ? Digest::MD5.hexdigest(digests.values.join) : ''
+        digest = Rails.application.config.assets.digest
+        if digest
+          digests = []
+          Rails.application.assets.each_file do |filename|
+            begin
+              digests << Rails.application.assets["#{filename}"].digest
+            rescue
+              next
+            end
+          end
+          Digest::MD5.hexdigest(digests.join)
+        else
+          ''
+        end
       end
 
       def ajaxify_add_meta_tag meta_tag
