@@ -218,9 +218,32 @@ You can also change the setting for individual links by adding classes:
     = link_to "Display loader", display_loader_path, class: 'display_loader'
     = link_to "Don't display loader", no_display_loader_path, class: 'no_display_loader'
 
-### Expiring assets after changes.
+### Expiring assets after changes - 
 
 Say, you have made some changes to the assets they are not reloaded after the deployment till the user refreshes the whole page. This problem is fixed by the gem by using the asset files' digest and forcing whole page refersh on detecting an asset change. The only change needed for this to work is to make sure the below option to true in your envionment file (staging.rb/development.rb/production.rb)
+
+    Rails.application.config.assets.digest = true
+
+### Reloading the whole page when any layouts/app logic changes - 
+
+Say you have made the changes to some view files and after the server restart, the already opened pages are required to reload whole page instead with ajax, there is a way provided for this. You ll have to just assign array of those filenames along with some digest.
+
+    Rails.application.config.layout_digests = ['xyz.haml-efegegegega787878']
+
+To create this list, following code can be added in an initializer file.
+
+    	FILES_TO_BE_OBSERVED = [ "app/views/layouts/_header.html.haml", "app/views/layouts/_logo.html.haml"]  
+  
+	digests = []
+	FILES_TO_BE_OBSERVED.each do |filename|
+	  begin
+	    digests << Digest::SHA256.file(filename).hexdigest
+	  rescue
+	    next
+	  end
+	end
+
+	Rails.application.config.layout_digests = Digest::MD5.hexdigest(digests.join)
 
 ## Contributing
 
