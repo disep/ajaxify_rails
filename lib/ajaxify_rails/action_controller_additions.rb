@@ -23,6 +23,7 @@ module ActionControllerAdditions
 
       def ajaxify_add_meta_tags
         ajaxify_add_meta_tag( ajaxify_assets_digest_meta_tag )
+        ajaxify_add_meta_tag( ajaxify_layouts_digest_meta_tag )
 
         # Correcting urls for non history api browsers wont work for post requests so add a meta tag to the response body to communicate this to
         # the ajaxify javascript
@@ -33,7 +34,6 @@ module ActionControllerAdditions
       def ajaxify_set_asset_digest_header
         response.headers['Ajaxify-Assets-Digest'] = ajaxify_assets_digest
       end
-
 
       def ajaxified?
         request.xhr? and params[:ajaxified]
@@ -78,9 +78,8 @@ module ActionControllerAdditions
         end
 
         super
-
         ajaxify_add_meta_tags unless request.xhr?
-
+        
         return
       end
 
@@ -125,12 +124,25 @@ module ActionControllerAdditions
       end
 
       def ajaxify_assets_digest
-        digests = Rails.application.config.assets.digests
-        digests ? Digest::MD5.hexdigest(digests.values.join) : ''
+        digest = Rails.application.config.assets.digest
+        if digest
+          digests = []
+          Rails.application.assets.each_file do |filename|
+            begin
+              digests << Rails.application.assets["#{filename}"].digest
+            rescue
+              next
+            end
+          end
+          Digest::MD5.hexdigest(digests.join)
+        else
+          ''
+        end
       end
 
       def ajaxify_add_meta_tag meta_tag
-        response.body = response_body[0].sub('<head>', "<head>\n    #{meta_tag}")
+        response_body[0].sub!('<head>', "<head>\n    #{meta_tag}")
+        response.body = response_body[0]
       end
 
     end
