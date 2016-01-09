@@ -218,6 +218,10 @@ You can also change the setting for individual links by adding classes:
     = link_to "Display loader", display_loader_path, class: 'display_loader'
     = link_to "Don't display loader", no_display_loader_path, class: 'no_display_loader'
 
+### Expiring assets after changes.
+
+Say, you have made some changes to the assets they are not reloaded after the deployment till the user refreshes the whole page. This problem is fixed by the gem by using the asset files' digest and forcing whole page refersh on detecting an asset change. The only change needed for this to work is to make sure the below option to true in your envionment file (staging.rb/development.rb/production.rb)
+
 ## Contributing
 
 1. Fork it

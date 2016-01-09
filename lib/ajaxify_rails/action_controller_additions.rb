@@ -35,6 +35,10 @@ module ActionControllerAdditions
         response.headers['Ajaxify-Assets-Digest'] = ajaxify_assets_digest
       end
 
+      def ajaxify_set_layout_digest_header
+        response.headers['Ajaxify-Layouts-Digest'] = ajaxify_layouts_digest
+      end
+
       def ajaxified?
         request.xhr? and params[:ajaxified]
       end
@@ -73,6 +77,7 @@ module ActionControllerAdditions
                                                                container: args[:ajaxify_container] } )
           response.body = response_body[0]
           ajaxify_set_asset_digest_header
+          ajaxify_set_layout_digest_header
 
           return
         end
@@ -122,6 +127,10 @@ module ActionControllerAdditions
       def ajaxify_assets_digest_meta_tag
         view_context.tag(:meta, name: 'ajaxify:assets-digest', content: ajaxify_assets_digest)
       end
+      
+      def ajaxify_layouts_digest_meta_tag
+        view_context.tag(:meta, name: 'ajaxify:layouts-digest', content: ajaxify_layouts_digest)
+      end
 
       def ajaxify_assets_digest
         digest = Rails.application.config.assets.digest
@@ -138,6 +147,10 @@ module ActionControllerAdditions
         else
           ''
         end
+      end
+      
+      def ajaxify_layouts_digest
+        Rails.application.config.layout_digests
       end
 
       def ajaxify_add_meta_tag meta_tag
