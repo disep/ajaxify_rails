@@ -31,7 +31,7 @@ Inspired by the pjax_rails gem (https://github.com/rails/pjax_rails).
 
 Add this line to your application's Gemfile:
 
-    gem 'ajaxify_rails'
+    gem 'ajaxify_rails', :github => 'udayakiran/ajaxify_rails'
 
 And then execute:
 
